@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Accountancy Quests: 1st to 4th Year Complete</title>
+    
+    <style>
+        /* Default Theme (Dark) */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1e1e1e;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        main {
+            display: flex;
+            min-height: calc(100vh - 80px);
+            padding-top: 10px;
+        }
+
+        /* Subject Navigation Panel (Sidebar) */
+        #subject-nav {
+            width: 280px;
+            padding: 20px 10px;
+            background-color: #2c2c2c;
+            border-right: 1px solid #444;
+            flex-shrink: 0;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .year-level {
+            margin-top: 20px;
+        }
+        .year-level h4 {
+            color: #00ffcc;
+            margin-bottom: 5px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+        .year-level h4.active-year {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .subject-list {
+            display: block;
+        }
+        .subject-list a {
+            display: block;
+            padding: 8px 10px;
+            margin: 5px 0;
+            background-color: #3a3a3a;
+            color: #f0f0f0;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.2s, color 0.2s;
+            font-size: 0.9em;
+        }
+        .subject-list a:hover {
+            background-color: #555;
+        }
+        .subject-list a.active {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+        }
+        .subject-progress {
+            font-size: 0.75em;
+            display: block;
+            color: #ccc;
+        }
+
+        /* Main Content Area */
+        #content-area {
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #2c2c2c;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Quiz Module Styles */
+        .question-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s, transform 0.1s;
+            background-color: #444;
+            color: #f0f0f0;
+        }
+        button:focus {
+            outline: 2px solid #007bff;
+        }
+        button.disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        #options-container button.correct {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+        }
+        #options-container button.incorrect {
+            background-color: #dc3545;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Controls */
+        #theme-toggle-btn, #menu-toggle-btn {
+            background-color: #795548;
+            color: white;
+            padding: 8px 12px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        /* Light Theme Styles */
+        .light-theme {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .light-theme #subject-nav {
+            background-color: #e8e8e8;
+            border-right: 1px solid #ccc;
+        }
+        .light-theme .year-level h4 {
+            color: #3f51b5;
+        }
+        .light-theme .year-level h4.active-year {
+            background-color: #3f51b5;
+            color: white;
+        }
+        .light-theme .subject-list a {
+            background-color: #ccc;
+            color: #333;
+        }
+        .light-theme .subject-list a:hover {
+            background-color: #aaa;
+        }
+        .light-theme .subject-list a.active {
+            background-color: #3f51b5;
+        }
+        .light-theme .container {
+            background-color: #ffffff;
+        }
+        .light-theme button:not(.correct):not(.incorrect) {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        .light-theme header {
+            background-color: #3f51b5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            main {
+                flex-direction: column;
+            }
+            #subject-nav {
+                width: 100%;
+                max-height: 50vh;
+                display: none;
+            }
+            #subject-nav.active {
+                display: block;
+            }
+            #content-area {
+                padding: 10px;
+            }
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>The Accountancy Quests</h1>
+        <div>
+            <button id="menu-toggle-btn">Menu</button>
+            <button id="theme-toggle-btn">Toggle Day Mode</button>
+        </div>
+    </header>
+
+    <main>
+        <aside id="subject-nav">
+            <div class="year-level">
+                <h4 id="year-1-title">⭐ 1st Year Subjects</h4>
+                <div id="y1-subjects" class="subject-list"></div>
+            </div>
+            <div class="year-level">
+                <h4 id="year-2-title">⭐⭐ 2nd Year Subjects</h4>
+                <div id="y2-subjects" class="subject-list"></div>
+            </div>
+            <div class="year-level">
+                <h4 id="year-3-title">⭐⭐⭐ 3rd Year Subjects</h4>
+                <div id="y3-subjects" class="subject-list"></div>
+            </div>
+            <div class="year-level">
+                <h4 id="year-4-title">⭐⭐⭐⭐ 4th Year Subjects</h4>
+                <div id="y4-subjects" class="subject-list"></div>
+            </div>
+        </aside>
+
+        <section id="content-area">
+            <div class="container">
+                <h2 id="current-subject-title">Select a Subject to Start Practicing!</h2>
+                
+                <div id="progress-display">
+                    <p id="progress-text">Progress: N/A</p>
+                    <p id="score-summary"></p>
+                </div>
+
+                <div id="quiz-module" style="display: none;">
+                    <div class="question-box">
+                        <p id="question-text">Question will load here...</p>
+                    </div>
+                    <div id="options-container" class="options-container"></div>
+                    <p id="feedback" style="margin-top: 15px; font-weight: bold; min-height: 20px;"></p>
+                    <button id="next-question-btn" style="margin-top: 15px; display: none;">Next Question</button>
+                    <button id="reset-progress-btn" style="margin-top: 15px; display: none;">Reset Progress</button>
+                </div>
+
+                <div id="initial-message">
+                    <p>Welcome, Future CPA! Select any subject from 1st to 4th Year panel on the left to begin your practice. Your progress in each subject will be saved automatically!</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        &copy; 2025 Accountancy Quests | Built with Pure JavaScript
+    </footer>
+
+    <script>
+        // --- 1. DATA STRUCTURE ---
+        const questionBank = {
+            "1st Year": {
+                "Financial Accounting 1": [
+                    { text: "What is the accounting equation?", answer: "Assets = Liabilities + Equity", options: ["Assets = Liabilities + Revenue", "Assets = Liabilities + Equity", "Revenue = Expenses + Equity"] },
+                    { text: "Which financial statement reports revenues and expenses?", answer: "Income Statement", options: ["Balance Sheet", "Income Statement", "Cash Flow Statement"] },
+                    { text: "What is a debit in accounting?", answer: "An increase in assets or expenses", options: ["A decrease in assets", "An increase in assets or expenses", "An increase in liabilities"] },
+                    { text: "Accrual accounting recognizes revenue when:", answer: "It is earned", options: ["It is received in cash", "It is earned", "It is budgeted"] },
+                    { text: "What is the purpose of a trial balance?", answer: "To check the equality of debits and credits", options: ["To calculate profit", "To check the equality of debits and credits", "To prepare budgets"] }
+                ],
+                "Business Mathematics": [
+                    { text: "What is the formula for simple interest?", answer: "I = PRT", options: ["I = PRT", "I = P + R + T", "I = P/R/T"] },
+                    { text: "What is compound interest?", answer: "Interest calculated on principal and previous interest", options: ["Interest on principal only", "Interest calculated on principal and previous interest", "Fixed interest rate"] },
+                    { text: "What is the present value formula?", answer: "PV = FV / (1 + r)^n", options: ["PV = FV * (1 + r)^n", "PV = FV / (1 + r)^n", "PV = FV + r"] },
+                    { text: "What is a percentage?", answer: "A fraction of 100", options: ["A fixed amount", "A fraction of 100", "A type of tax"] },
+                    { text: "What is a linear equation?", answer: "An equation with a straight-line graph", options: ["An equation with a curve", "An equation with a straight-line graph", "An equation with no solution"] }
+                ]
+            },
+            "2nd Year": {
+                "Financial Accounting 2": [
+                    { text: "What is depreciation?", answer: "Allocation of asset cost over its useful life", options: ["Sale of an asset", "Allocation of asset cost over its useful life", "Increase in asset value"] },
+                    { text: "What is a journal entry?", answer: "Record of a transaction in accounting", options: ["A financial statement", "Record of a transaction in accounting", "A budget plan"] },
+                    { text: "What is a ledger?", answer: "A record of all accounts", options: ["A type of expense", "A record of all accounts", "A cash flow statement"] },
+                    { text: "What is an adjusting entry?", answer: "An entry to update account balances", options: ["An entry to close accounts", "An entry to update account balances", "An entry to record cash"] },
+                    { text: "What is a prepaid expense?", answer: "An expense paid in advance", options: ["An expense paid in advance", "A revenue received", "A liability"] }
+                ],
+                "Cost Accounting 1": [
+                    { text: "What is direct labor?", answer: "Labor directly involved in production", options: ["All employee salaries", "Labor directly involved in production", "Administrative costs"] },
+                    { text: "What is overhead?", answer: "Indirect costs of production", options: ["Direct materials", "Indirect costs of production", "Sales expenses"] },
+                    { text: "What is job order costing?", answer: "Costing for specific jobs", options: ["Costing for entire production", "Costing for specific jobs", "Costing for services"] },
+                    { text: "What is a cost driver?", answer: "A factor that causes costs", options: ["A type of revenue", "A factor that causes costs", "A financial statement"] },
+                    { text: "What is a variable cost?", answer: "A cost that varies with production", options: ["A fixed cost", "A cost that varies with production", "A sunk cost"] }
+                ]
+            },
+            "3rd Year": {
+                "Financial Accounting 3": [
+                    { text: "What is the journal entry for issuing common stock at par?", answer: "Debit Cash; Credit Common Stock", options: ["Debit Common Stock; Credit Cash", "Debit Cash; Credit Common Stock", "Debit Cash; Credit Retained Earnings"] },
+                    { text: "What is preferred stock?", answer: "Stock with dividend preference", options: ["Stock with voting rights", "Stock with dividend preference", "Stock with no dividends"] },
+                    { text: "What is goodwill?", answer: "Excess purchase price over fair value of net assets", options: ["A type of liability", "Excess purchase price over fair value of net assets", "A revenue stream"] },
+                    { text: "What is a bond discount?", answer: "Bonds issued below par value", options: ["Bonds issued above par value", "Bonds issued below par value", "Bonds with no interest"] },
+                    { text: "What is the equity method?", answer: "Accounting for significant influence investments", options: ["Accounting for all investments", "Accounting for significant influence investments", "Accounting for liabilities"] }
+                ],
+                "Cost Accounting 2": [
+                    { text: "What is process costing used for?", answer: "Homogeneous products in continuous production", options: ["Custom products", "Homogeneous products in continuous production", "Service industries"] },
+                    { text: "What are equivalent units?", answer: "Units that could have been completed", options: ["Actual units produced", "Units that could have been completed", "Units sold"] },
+                    { text: "What is activity-based costing?", answer: "Cost allocation using multiple drivers", options: ["Cost allocation using single driver", "Cost allocation using multiple drivers", "Cost allocation without drivers"] },
+                    { text: "What is a variance?", answer: "Difference between actual and standard costs", options: ["A type of revenue", "Difference between actual and standard costs", "A fixed cost"] },
+                    { text: "What is a favorable variance?", answer: "Actual cost less than standard cost", options: ["Actual cost more than standard", "Actual cost less than standard cost", "No cost difference"] }
+                ],
+                "Auditing 1": [
+                    { text: "What is the primary objective of an audit?", answer: "Express an opinion on financial statements", options: ["Detect fraud", "Express an opinion on financial statements", "Prepare financial statements"] },
+                    { text: "What is audit evidence?", answer: "Information to support audit conclusions", options: ["Financial statements", "Information to support audit conclusions", "Management reports"] },
+                    { text: "What is internal control?", answer: "Process to ensure reliable reporting", options: ["Financial statements", "Process to ensure reliable reporting", "Tax compliance"] },
+                    { text: "What is a qualified opinion?", answer: "Opinion with material misstatements", options: ["Perfect financial statements", "Opinion with material misstatements", "No audit performed"] },
+                    { text: "What is analytical procedure?", answer: "Analysis of financial relationships", options: ["Physical inventory count", "Analysis of financial relationships", "Tax calculation"] }
+                ],
+                "Taxation 2": [
+                    { text: "When is the annual income tax return due?", answer: "April 15 of the following year", options: ["January 31", "April 15 of the following year", "June 15"] },
+                    { text: "What is the VAT rate in the Philippines?", answer: "12%", options: ["5%", "12%", "15%"] },
+                    { text: "What is withholding tax?", answer: "Tax deducted at source", options: ["Tax on profits", "Tax deducted at source", "Tax on assets"] },
+                    { text: "What is capital gains tax?", answer: "Tax on sale of capital assets", options: ["Tax on income", "Tax on sale of capital assets", "Tax on expenses"] },
+                    { text: "What is donor's tax?", answer: "Tax on gifts", options: ["Tax on income", "Tax on gifts", "Tax on sales"] }
+                ],
+                "Management / Business Ethics": [
+                    { text: "What are the four functions of management?", answer: "Planning, organizing, leading, controlling", options: ["Marketing, finance, operations, HR", "Planning, organizing, leading, controlling", "Budgeting, auditing, reporting, compliance"] },
+                    { text: "What is ethical leadership?", answer: "Leading with integrity and fairness", options: ["Maximizing profits", "Leading with integrity and fairness", "Following laws only"] },
+                    { text: "What is corporate governance?", answer: "Rules for directing a company", options: ["Financial reporting", "Rules for directing a company", "Marketing strategy"] },
+                    { text: "What is stakeholder theory?", answer: "Balancing interests of all stakeholders", options: ["Maximizing shareholder wealth", "Balancing interests of all stakeholders", "Government regulation"] },
+                    { text: "What is CSR?", answer: "Voluntary actions to benefit society", options: ["Legal compliance", "Voluntary actions to benefit society", "Profit maximization"] }
+                ]
+            },
+            "4th Year": {
+                "Auditing 2": [
+                    { text: "Why is cash audit critical?", answer: "High risk of misappropriation", options: ["Largest asset", "High risk of misappropriation", "Simple transactions"] },
+                    { text: "What is a bank confirmation?", answer: "Verification of bank balances", options: ["Verification of sales", "Verification of bank balances", "Verification of expenses"] },
+                    { text: "What is kiting?", answer: "Manipulating bank transfers", options: ["Investing cash", "Manipulating bank transfers", "Currency exchange"] },
+                    { text: "What does inventory observation test?", answer: "Existence of inventory", options: ["Inventory valuation", "Existence of inventory", "Inventory sales"] },
+                    { text: "What is substantive testing?", answer: "Testing for material misstatements", options: ["Testing controls", "Testing for material misstatements", "Testing budgets"] }
+                ],
+                "Strategic Cost Management": [
+                    { text: "What is strategic cost management?", answer: "Cost reduction with competitive focus", options: ["Only cost minimization", "Cost reduction with competitive focus", "Only product costing"] },
+                    { text: "What is the balanced scorecard?", answer: "Financial, customer, processes, growth", options: ["Only financial measures", "Financial, customer, processes, growth", "Only cost measures"] },
+                    { text: "What is target costing?", answer: "Cost based on market price minus profit", options: ["Cost based on production", "Cost based on market price minus profit", "Cost based on history"] },
+                    { text: "What is JIT production?", answer: "Minimize inventory and waste", options: ["Maximize production", "Minimize inventory and waste", "Increase batch sizes"] },
+                    { text: "What is lean manufacturing?", answer: "Eliminate waste, add value", options: ["Maximize output", "Eliminate waste, add value", "Increase inventory"] }
+                ],
+                "Government Accounting": [
+                    { text: "What is the NGAS?", answer: "New Government Accounting System", options: ["GAAP for government", "New Government Accounting System", "IFRS for government"] },
+                    { text: "What is the government accounting equation?", answer: "Assets = Liabilities + Government Equity", options: ["Assets = Liabilities + Owners' Equity", "Assets = Liabilities + Government Equity", "Assets = Liabilities + Revenue"] },
+                    { text: "What are allotments?", answer: "Authorization to incur obligations", options: ["Actual expenditures", "Authorization to incur obligations", "Cash disbursements"] },
+                    { text: "What is modified accrual?", answer: "Revenue when measurable and available", options: ["Revenue when earned", "Revenue when measurable and available", "Revenue when received"] },
+                    { text: "What does COA do?", answer: "Audits government agencies", options: ["Prepares budgets", "Audits government agencies", "Collects taxes"] }
+                ],
+                "Accounting Research": [
+                    { text: "What is accounting research?", answer: "Improving accounting theory and practice", options: ["Analyzing financial statements", "Improving accounting theory and practice", "Auditing standards"] },
+                    { text: "What is the scientific method?", answer: "Observation, hypothesis, testing, conclusion", options: ["Only data collection", "Observation, hypothesis, testing, conclusion", "Only literature review"] },
+                    { text: "What is a hypothesis?", answer: "Testable prediction", options: ["Proven fact", "Testable prediction", "Theoretical concept"] },
+                    { text: "What is quantitative research?", answer: "Uses numerical data and statistics", options: ["Uses interviews only", "Uses numerical data and statistics", "Uses case studies only"] },
+                    { text: "What is validity?", answer: "Measures what it intends to measure", options: ["Sample size accuracy", "Measures what it intends to measure", "Statistical significance"] }
+                ],
+                "Accounting for Special Transactions": [
+                    { text: "What is goodwill?", answer: "Excess cost over fair value of net assets", options: ["Reputation value", "Excess cost over fair value of net assets", "Future earnings"] },
+                    { text: "What is the equity method?", answer: "For significant influence investments", options: ["For all investments", "For significant influence investments", "For liabilities"] },
+                    { text: "What is a finance lease?", answer: "Transfers risks and rewards of ownership", options: ["Short-term lease", "Transfers risks and rewards of ownership", "Maintenance lease"] },
+                    { text: "What is deferred tax?", answer: "Tax from temporary differences", options: ["Tax from permanent differences", "Tax from temporary differences", "Current tax only"] },
+                    { text: "What is segment reporting?", answer: "Disclosing operating segment information", options: ["Disclosing only customers", "Disclosing operating segment information", "Disclosing only products"] }
+                ]
+            }
+        };
+
+        // --- 2. APPLICATION STATE AND INITIALIZATION ---
+        let currentTheme = 'dark';
+        let currentSubject = null;
+        let currentQuestionIndex = 0;
+        let userScore = 0;
+        let userProgress = {};
+
+        try {
+            userProgress = JSON.parse(localStorage.getItem('accountancyQuestsProgress')) || {};
+        } catch (e) {
+            console.error('Error parsing localStorage data:', e);
+            userProgress = {};
+        }
+
+        // Initialize the application
+        function initializeApp() {
+            populateSubjectNavigation();
+            setupEventListeners();
+            updateProgressDisplay();
+        }
+
+        // --- 3. SUBJECT NAVIGATION SETUP ---
+        function populateSubjectNavigation() {
+            const years = ['1st Year', '2nd Year', '3rd Year', '4th Year'];
+            
+            years.forEach(year => {
+                const containerId = `y${year.charAt(0)}-subjects`;
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                container.innerHTML = '';
+                
+                if (questionBank[year]) {
+                    Object.keys(questionBank[year]).forEach(subject => {
+                        const progress = userProgress[subject] || { answered: 0, correct: 0 };
+                        const totalQuestions = questionBank[year][subject].length;
+                        const progressPercent = progress.answered > 0 ? Math.round((progress.answered / totalQuestions) * 100) : 0;
+                        
+                        const subjectLink = document.createElement('a');
+                        subjectLink.href = '#';
+                        subjectLink.textContent = subject;
+                        subjectLink.innerHTML += `<span class="subject-progress">${progress.answered}/${totalQuestions} (${progressPercent}%)</span>`;
+                        
+                        subjectLink.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            selectSubject(subject, year);
+                        });
+                        
+                        container.appendChild(subjectLink);
+                    });
+                }
+            });
+        }
+
+        // --- 4. SUBJECT SELECTION AND QUIZ FLOW ---
+        function selectSubject(subject, year) {
+            currentSubject = subject;
+            currentQuestionIndex = 0;
+            userScore = 0;
+            
+            document.getElementById('current-subject-title').textContent = `${subject} (${year})`;
+            document.getElementById('initial-message').style.display = 'none';
+            document.getElementById('quiz-module').style.display = 'block';
+            
+            document.querySelectorAll('.subject-list a').forEach(link => {
+                link.classList.remove('active');
+                if (link.textContent.includes(subject)) {
+                    link.classList.add('active');
+                }
+            });
+            
+            loadQuestion();
+            updateProgressDisplay();
+        }
+
+        function loadQuestion() {
+            if (!currentSubject) return;
+            
+            const year = getYearForSubject(currentSubject);
+            const questions = questionBank[year][currentSubject];
+            const question = questions[currentQuestionIndex];
+            
+            document.getElementById('question-text').textContent = `Q${currentQuestionIndex + 1}: ${question.text}`;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.setAttribute('aria-label', `Option ${index + 1}: ${option}`);
+                button.addEventListener('click', () => checkAnswer(option));
+                button.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        checkAnswer(option);
+                    }
+                });
+                optionsContainer.appendChild(button);
+            });
+            
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('next-question-btn').style.display = 'none';
+            document.getElementById('reset-progress-btn').style.display = 'block';
+            updateProgressDisplay();
+        }
+
+        function checkAnswer(selectedOption) {
+            const year = getYearForSubject(currentSubject);
+            const questions = questionBank[year][currentSubject];
+            const correctAnswer = questions[currentQuestionIndex].answer;
+            
+            document.querySelectorAll('#options-container button').forEach(button => {
+                button.disabled = true;
+                button.classList.add('disabled');
+                if (button.textContent === correctAnswer) {
+                    button.classList.add('correct');
+                } else if (button.textContent === selectedOption && selectedOption !== correctAnswer) {
+                    button.classList.add('incorrect');
+                }
+            });
+            
+            if (!userProgress[currentSubject]) {
+                userProgress[currentSubject] = { answered: 0, correct: 0 };
+            }
+            
+            userProgress[currentSubject].answered++;
+            
+            if (selectedOption === correctAnswer) {
+                userScore++;
+                userProgress[currentSubject].correct++;
+                document.getElementById('feedback').textContent = '✓ Correct!';
+                document.getElementById('feedback').style.color = '#28a745';
+            } else {
+                document.getElementById('feedback').textContent = `✗ Incorrect. The correct answer is: ${correctAnswer}`;
+                document.getElementById('feedback').style.color = '#dc3545';
+            }
+            
+            localStorage.setItem('accountancyQuestsProgress', JSON.stringify(userProgress));
+            
+            document.getElementById('next-question-btn').style.display = 'block';
+            updateProgressDisplay();
+        }
+
+        // --- 5. PROGRESS TRACKING AND DISPLAY ---
+        function updateProgressDisplay() {
+            if (!currentSubject) {
+                document.getElementById('progress-text').textContent = 'Progress: Select a subject to begin';
+                document.getElementById('score-summary').textContent = '';
+                return;
+            }
+            
+            const year = getYearForSubject(currentSubject);
+            const totalQuestions = questionBank[year][currentSubject].length;
+            const progress = userProgress[currentSubject] || { answered: 0, correct: 0 };
+            const progressPercent = Math.round((progress.answered / totalQuestions) * 100);
+            
+            document.getElementById('progress-text').textContent = 
+                `Progress: ${progress.answered}/${totalQuestions} questions (${progressPercent}%)`;
+            document.getElementById('score-summary').textContent = 
+                `Score: ${progress.correct || 0} correct out of ${progress.answered} answered`;
+            
+            document.querySelectorAll('.subject-list a').forEach(link => {
+                if (link.textContent.includes(currentSubject)) {
+                    const progressSpan = link.querySelector('.subject-progress');
+                    if (progressSpan) {
+                        progressSpan.textContent = ` ${progress.answered}/${totalQuestions} (${progressPercent}%)`;
+                    }
+                }
+            });
+        }
+
+        // --- 6. UTILITY FUNCTIONS ---
+        function getYearForSubject(subject) {
+            for (const year in questionBank) {
+                if (questionBank[year][subject]) {
+                    return year;
+                }
+            }
+            return '3rd Year';
+        }
+
+        function setupEventListeners() {
+            document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
+            document.getElementById('next-question-btn').addEventListener('click', nextQuestion);
+            document.getElementById('reset-progress-btn').addEventListener('click', () => {
+                if (currentSubject) {
+                    delete userProgress[currentSubject];
+                    localStorage.setItem('accountancyQuestsProgress', JSON.stringify(userProgress));
+                    currentQuestionIndex = 0;
+                    userScore = 0;
+                    populateSubjectNavigation();
+                    updateProgressDisplay();
+                    loadQuestion();
+                }
+            });
+            
+            document.getElementById('menu-toggle-btn').addEventListener('click', () => {
+                document.getElementById('subject-nav').classList.toggle('active');
+            });
+            
+            document.querySelectorAll('.year-level h4').forEach(header => {
+                header.addEventListener('click', function() {
+                    this.classList.toggle('active-year');
+                    const subjectList = this.nextElementSibling;
+                    subjectList.style.display = subjectList.style.display === 'none' ? 'block' : 'none';
+                });
+            });
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.classList.toggle('light-theme');
+            document.getElementById('theme-toggle-btn').textContent = 
+                currentTheme === 'dark' ? 'Toggle Day Mode' : 'Toggle Night Mode';
+        }
+
+        function nextQuestion() {
+            const year = getYearForSubject(currentSubject);
+            const questions = questionBank[year][currentSubject];
+            
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                const finalScore = Math.round((userScore / questions.length) * 100);
+                document.getElementById('question-text').textContent = 
+                    `Quiz Completed! Final Score: ${userScore}/${questions.length} (${finalScore}%)`;
+                document.getElementById('options-container').innerHTML = '';
+                document.getElementById('feedback').textContent = 
+                    'Congratulations! You have completed this subject. Select another subject to continue practicing.';
+                document.getElementById('next-question-btn').style.display = 'none';
+                document.getElementById('reset-progress-btn').style.display = 'block';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
+</body>
+</html>
